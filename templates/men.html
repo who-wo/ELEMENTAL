@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}เสื้อผ้าผู้ชาย - Elemental{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero" style="height: 50vh; min-height: 350px;">
+    <div class="hero-bg" style="background-image: url('{{ url_for('static', filename='images/fishing_vest.png') }}');">
+    </div>
+    <div class="hero-content">
+        <p class="hero-tagline">Men's Collection</p>
+        <h1 class="hero-title">ผู้ชาย</h1>
+        <p class="hero-subtitle">เสื้อผ้าสำหรับผู้ชายที่พร้อมพิชิตทุกยอดเขา</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">คอลเลกชันผู้ชาย</h2>
+        {% if products %}
+        <div class="products-grid">
+            {% for p in products %}
+            <div class="product-card fade-in">
+                <div class="product-card-image">
+                    <img src="{{ url_for('static', filename='images/' + p.image) }}" alt="{{ p.name }}">
+                    {% if p.on_sale %}
+                    <div class="product-card-badges">
+                        <span class="badge badge-sale">SALE</span>
+                    </div>
+                    {% elif p.is_new %}
+                    <div class="product-card-badges">
+                        <span class="badge badge-new">NEW</span>
+                    </div>
+                    {% endif %}
+                    <div class="product-card-overlay">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}"
+                            class="btn btn-white">ดูรายละเอียด</a>
+                    </div>
+                </div>
+                <div class="product-card-info">
+                    <p class="product-card-category">ผู้ชาย</p>
+                    <h3 class="product-card-name">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+                    </h3>
+                    <div class="product-card-price">
+                        {% if p.on_sale %}
+                        <span class="sale-price">฿{{ '{:,.0f}'.format(p.sale_price) }}</span>
+                        <span class="original-price">฿{{ '{:,.0f}'.format(p.price) }}</span>
+                        {% else %}
+                        <span>฿{{ '{:,.0f}'.format(p.price) }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <h3>ยังไม่มีสินค้าในหมวดนี้</h3>
+            <p>เร็วๆ นี้!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

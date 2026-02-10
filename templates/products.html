@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}สินค้าทั้งหมด - Elemental{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="section-title center">สินค้าทั้งหมด</h1>
+        <p>คอลเลกชันเสื้อผ้าสำหรับการผจญภัยทุกรูปแบบ</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="products-grid">
+            {% for p in products %}
+            <div class="product-card fade-in">
+                <div class="product-card-image">
+                    <img src="{{ url_for('static', filename='images/' + p.image) }}" alt="{{ p.name }}">
+                    {% if p.on_sale %}
+                    <div class="product-card-badges">
+                        <span class="badge badge-sale">SALE</span>
+                    </div>
+                    {% elif p.is_new %}
+                    <div class="product-card-badges">
+                        <span class="badge badge-new">NEW</span>
+                    </div>
+                    {% endif %}
+                    <div class="product-card-overlay">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}"
+                            class="btn btn-white">ดูรายละเอียด</a>
+                    </div>
+                </div>
+                <div class="product-card-info">
+                    <p class="product-card-category">{{ p.category_label }}</p>
+                    <h3 class="product-card-name">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+                    </h3>
+                    <div class="product-card-price">
+                        {% if p.on_sale %}
+                        <span class="sale-price">฿{{ '{:,.0f}'.format(p.sale_price) }}</span>
+                        <span class="original-price">฿{{ '{:,.0f}'.format(p.price) }}</span>
+                        {% else %}
+                        <span>฿{{ '{:,.0f}'.format(p.price) }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

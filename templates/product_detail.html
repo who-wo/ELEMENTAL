@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} - Elemental{% endblock %}
+
+{% block content %}
+<section class="product-detail-section">
+    <div class="container">
+        <div class="product-detail-grid">
+            <!-- Image -->
+            <div class="product-detail-image">
+                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+            </div>
+
+            <!-- Info -->
+            <div class="product-detail-info">
+                <p class="product-category">{{ product.category_label }}</p>
+                <h1>{{ product.name }}</h1>
+                <div class="price">
+                    {% if product.on_sale %}
+                    ฿{{ '{:,.0f}'.format(product.sale_price) }}
+                    <span class="original">฿{{ '{:,.0f}'.format(product.price) }}</span>
+                    {% else %}
+                    ฿{{ '{:,.0f}'.format(product.price) }}
+                    {% endif %}
+                </div>
+                <p class="description">{{ product.description }}</p>
+
+                <a href="{{ url_for('order', product_id=product.id) }}" class="btn btn-primary">
+                    🛒 สั่งซื้อสินค้า
+                </a>
+
+                <div class="product-features">
+                    <h3>คุณสมบัติ</h3>
+                    <ul>
+                        {% for feature in product.features %}
+                        <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

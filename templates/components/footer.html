@@ -1,0 +1,61 @@
+<!-- Footer Component -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <!-- Brand -->
+            <div class="footer-brand">
+                <div class="brand-name">Elemental</div>
+                <p>เสื้อผ้าสำหรับนักผจญภัย ออกแบบมาเพื่อทุกภูมิประเทศ ทุกสภาพอากาศ</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook">📘</a>
+                    <a href="#" aria-label="Instagram">📷</a>
+                    <a href="#" aria-label="Twitter">🐦</a>
+                    <a href="#" aria-label="YouTube">🎬</a>
+                </div>
+            </div>
+
+            <!-- Shop -->
+            <div class="footer-col">
+                <h4>ช้อปปิ้ง</h4>
+                <ul>
+                    <li><a href="{{ url_for('products') }}">สินค้าทั้งหมด</a></li>
+                    <li><a href="{{ url_for('men') }}">ผู้ชาย</a></li>
+                    <li><a href="{{ url_for('women') }}">ผู้หญิง</a></li>
+                    <li><a href="{{ url_for('promotions') }}">โปรโมชั่น</a></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="footer-col">
+                <h4>ช่วยเหลือ</h4>
+                <ul>
+                    <li><a href="#">ติดต่อเรา</a></li>
+                    <li><a href="#">นโยบายคืนสินค้า</a></li>
+                    <li><a href="#">การจัดส่ง</a></li>
+                    <li><a href="#">คำถามที่พบบ่อย</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="footer-col">
+                <h4>รับข่าวสาร</h4>
+                <p style="font-size: 0.88rem; margin-bottom: 16px;">สมัครรับข่าวสารเพื่อรับโปรโมชั่นพิเศษ</p>
+                <div class="footer-newsletter">
+                    <form onsubmit="event.preventDefault(); alert('ขอบคุณที่สมัครรับข่าวสาร!');">
+                        <input type="email" placeholder="อีเมลของคุณ" required>
+                        <button type="submit">สมัคร</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Elemental. All rights reserved.</p>
+            <div class="footer-bottom-links">
+                <a href="#">นโยบายความเป็นส่วนตัว</a>
+                <a href="#">ข้อกำหนดการใช้งาน</a>
+                <a href="#">คุกกี้</a>
+            </div>
+        </div>
+    </div>
+</footer>

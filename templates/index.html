@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Elemental - เสื้อผ้าปีนเขา & กิจกรรมกลางแจ้ง{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-bg" style="background-image: url('{{ url_for('static', filename='images/one.png') }}');"></div>
+  <div class="hero-content">
+    <p class="hero-tagline">Adventure Awaits</p>
+    <h1 class="hero-title">Never<br>Stop<br>Exploring</h1>
+    <p class="hero-subtitle">เสื้อผ้าคุณภาพสูงสำหรับนักผจญภัย ออกแบบมาเพื่อทนทานทุกสภาพอากาศ</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('products') }}" class="btn btn-white">ดูสินค้าทั้งหมด</a>
+      <a href="{{ url_for('promotions') }}" class="btn btn-secondary"
+        style="border-color: white; color: white;">โปรโมชั่น</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span></span>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="categories-section">
+  <div class="container">
+    <h2 class="section-title center">Shop by Category</h2>
+    <div class="categories-grid">
+      <a href="{{ url_for('men') }}" class="category-card">
+        <div class="category-card-bg"
+          style="background-image: url('{{ url_for('static', filename='images/fishing_vest.png') }}'); background-color: #1a1a1a;">
+        </div>
+        <div class="category-card-content">
+          <h3>ผู้ชาย</h3>
+          <p>เสื้อผ้าสำหรับผู้ชายที่ชอบผจญภัย</p>
+          <span class="btn btn-white">ดูคอลเลกชัน →</span>
+        </div>
+      </a>
+      <a href="{{ url_for('women') }}" class="category-card">
+        <div class="category-card-bg"
+          style="background-image: url('{{ url_for('static', filename='images/coo.png') }}'); background-color: #1a1a1a;">
+        </div>
+        <div class="category-card-content">
+          <h3>ผู้หญิง</h3>
+          <p>เสื้อผ้าสำหรับผู้หญิงที่รักธรรมชาติ</p>
+          <span class="btn btn-white">ดูคอลเลกชัน →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured-section">
+  <div class="container">
+    <h2 class="section-title center">สินค้าแนะนำ</h2>
+    <div class="products-grid">
+      {% for p in products[:4] %}
+      <div class="product-card fade-in">
+        <div class="product-card-image">
+          <img src="{{ url_for('static', filename='images/' + p.image) }}" alt="{{ p.name }}">
+          {% if p.on_sale %}
+          <div class="product-card-badges">
+            <span class="badge badge-sale">SALE</span>
+          </div>
+          {% elif p.is_new %}
+          <div class="product-card-badges">
+            <span class="badge badge-new">NEW</span>
+          </div>
+          {% endif %}
+          <div class="product-card-overlay">
+            <a href="{{ url_for('product_detail', product_id=p.id) }}" class="btn btn-white">ดูรายละเอียด</a>
+          </div>
+        </div>
+        <div class="product-card-info">
+          <p class="product-card-category">{{ p.category_label }}</p>
+          <h3 class="product-card-name">
+            <a href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+          </h3>
+          <div class="product-card-price">
+            {% if p.on_sale %}
+            <span class="sale-price">฿{{ '{:,.0f}'.format(p.sale_price) }}</span>
+            <span class="original-price">฿{{ '{:,.0f}'.format(p.price) }}</span>
+            {% else %}
+            <span>฿{{ '{:,.0f}'.format(p.price) }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="{{ url_for('products') }}" class="btn btn-primary">ดูสินค้าทั้งหมด →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Promo Banner -->
+<section class="promo-banner">
+  <h2>ลดสูงสุด 40%</h2>
+  <p>สินค้าโปรโมชั่นสำหรับนักผจญภัยตัวจริง ช้อปเลย!</p>
+  <a href="{{ url_for('promotions') }}" class="btn btn-white">ดูโปรโมชั่น</a>
+</section>
+{% endblock %}

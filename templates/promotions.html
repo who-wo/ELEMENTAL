@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}โปรโมชั่น - Elemental{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="section-title center">โปรโมชั่น</h1>
+        <p>สินค้าลดราคาพิเศษ สำหรับนักผจญภัยตัวจริง</p>
+    </div>
+</div>
+
+<!-- Promo Banner -->
+<section class="promo-banner" style="padding: 40px 20px;">
+    <h2 style="font-size: 2.5rem;">🔥 ลดสูงสุด 40% 🔥</h2>
+    <p>โปรโมชั่นมีจำนวนจำกัด รีบช้อปก่อนหมด!</p>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if products %}
+        <div class="products-grid">
+            {% for p in products %}
+            <div class="product-card fade-in">
+                <div class="product-card-image">
+                    <img src="{{ url_for('static', filename='images/' + p.image) }}" alt="{{ p.name }}">
+                    <div class="product-card-badges">
+                        <span class="badge badge-sale">-{{ (((p.price - p.sale_price) / p.price) * 100)|int }}%</span>
+                    </div>
+                    <div class="product-card-overlay">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}"
+                            class="btn btn-white">ดูรายละเอียด</a>
+                    </div>
+                </div>
+                <div class="product-card-info">
+                    <p class="product-card-category">{{ p.category_label }}</p>
+                    <h3 class="product-card-name">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+                    </h3>
+                    <div class="product-card-price">
+                        <span class="sale-price">฿{{ '{:,.0f}'.format(p.sale_price) }}</span>
+                        <span class="original-price">฿{{ '{:,.0f}'.format(p.price) }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <h3>ยังไม่มีสินค้าโปรโมชั่น</h3>
+            <p>ติดตามโปรโมชั่นใหม่ๆ ได้เร็วๆ นี้</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

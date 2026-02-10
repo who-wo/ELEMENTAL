@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}ค้นหาสินค้า - Elemental{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="section-title center">ค้นหาสินค้า</h1>
+        <p>ค้นหาเสื้อผ้าที่เหมาะกับคุณ</p>
+    </div>
+</div>
+
+<section class="search-section">
+    <div class="container">
+        <form action="{{ url_for('search_page') }}" method="GET" class="search-bar-large">
+            <input type="text" name="q" value="{{ query }}" placeholder="พิมพ์ชื่อสินค้าที่ต้องการค้นหา..." autofocus>
+            <button type="submit">ค้นหา</button>
+        </form>
+
+        {% if query %}
+        <p class="search-results-count">
+            พบ <strong>{{ results|length }}</strong> รายการสำหรับ "<strong>{{ query }}</strong>"
+        </p>
+        {% endif %}
+
+        {% if results %}
+        <div class="products-grid">
+            {% for p in results %}
+            <div class="product-card fade-in">
+                <div class="product-card-image">
+                    <img src="{{ url_for('static', filename='images/' + p.image) }}" alt="{{ p.name }}">
+                    {% if p.on_sale %}
+                    <div class="product-card-badges">
+                        <span class="badge badge-sale">SALE</span>
+                    </div>
+                    {% endif %}
+                    <div class="product-card-overlay">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}"
+                            class="btn btn-white">ดูรายละเอียด</a>
+                    </div>
+                </div>
+                <div class="product-card-info">
+                    <p class="product-card-category">{{ p.category_label }}</p>
+                    <h3 class="product-card-name">
+                        <a href="{{ url_for('product_detail', product_id=p.id) }}">{{ p.name }}</a>
+                    </h3>
+                    <div class="product-card-price">
+                        {% if p.on_sale %}
+                        <span class="sale-price">฿{{ '{:,.0f}'.format(p.sale_price) }}</span>
+                        <span class="original-price">฿{{ '{:,.0f}'.format(p.price) }}</span>
+                        {% else %}
+                        <span>฿{{ '{:,.0f}'.format(p.price) }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% elif query %}
+        <div class="no-results">
+            <h3>ไม่พบสินค้า</h3>
+            <p>ลองค้นหาด้วยคำอื่น เช่น "jacket", "vest", "t-shirt"</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

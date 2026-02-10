@@ -1,0 +1,45 @@
+<!-- Header Component -->
+<div class="header-top">
+    <div class="container">
+        <span>🏔️ จัดส่งฟรีทุกออเดอร์ที่สั่งซื้อเกิน ฿1,500</span>
+    </div>
+</div>
+<header class="site-header" id="siteHeader">
+    <div class="header-main">
+        <a href="{{ url_for('index') }}" class="header-logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Elemental Logo">
+            <span class="brand-name">Elemental</span>
+        </a>
+
+        <nav class="header-nav" id="headerNav">
+            <a href="{{ url_for('products') }}" class="{{ 'active' if active_page == 'products' }}">สินค้า</a>
+            <a href="{{ url_for('men') }}" class="{{ 'active' if active_page == 'men' }}">ผู้ชาย</a>
+            <a href="{{ url_for('women') }}" class="{{ 'active' if active_page == 'women' }}">ผู้หญิง</a>
+            <a href="{{ url_for('promotions') }}" class="{{ 'active' if active_page == 'promotions' }}">โปรโมชั่น</a>
+            <a href="{{ url_for('search_page') }}" class="{{ 'active' if active_page == 'search' }}">ค้นหา</a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="search-toggle" id="searchToggle" aria-label="Search">
+                🔍
+            </button>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="searchOverlay">
+    <button class="search-close" id="searchClose">&times;</button>
+    <div class="search-overlay-content">
+        <h3>ค้นหาสินค้า</h3>
+        <form action="{{ url_for('search_page') }}" method="GET">
+            <input type="text" name="q" placeholder="พิมพ์ชื่อสินค้า..." autofocus>
+            <button type="submit">🔍</button>
+        </form>
+    </div>
+</div>
