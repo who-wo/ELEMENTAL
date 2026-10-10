@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}จัดการออเดอร์ - Elemental{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="section-title center">📋 จัดการออเดอร์</h1>
+        <p>รายการสั่งซื้อทั้งหมด {{ orders|length }} ออเดอร์</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        {% if orders|length == 0 %}
+        <div class="no-results">
+            <h3>ยังไม่มีออเดอร์</h3>
+            <p>เมื่อมีลูกค้าสั่งซื้อสินค้า ข้อมูลจะแสดงที่นี่</p>
+        </div>
+        {% else %}
+
+        <!-- Stats Bar -->
+        <div class="admin-stats">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">📦</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number">{{ orders|length }}</span>
+                    <span class="admin-stat-label">ออเดอร์ทั้งหมด</span>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">💵</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number">{{ orders|selectattr('payment_method', 'eq', 'cod')|list|length
+                        }}</span>
+                    <span class="admin-stat-label">เก็บเงินปลายทาง</span>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">📱</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number">{{ orders|selectattr('payment_method', 'eq', 'qr')|list|length
+                        }}</span>
+                    <span class="admin-stat-label">QR Code</span>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">💰</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number">฿{{ '{:,.0f}'.format(orders|map(attribute='price')|sum) }}</span>
+                    <span class="admin-stat-label">ยอดขายรวม</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders List -->
+        <div class="admin-orders-list">
+            {% for order in orders %}
+            <div class="admin-order-card" id="order-{{ order.order_id }}">
+                <div class="admin-order-header">
+                    <div class="admin-order-id">
+                        <strong>{{ order.order_id }}</strong>
+                        <span class="admin-order-date">{{ order.created_at }}</span>
+                    </div>
+                    <div class="admin-order-status-wrapper">
+                        <select class="admin-status-select" data-order-id="{{ order.order_id }}"
+                            onchange="updateStatus(this)">
+                            <option value="รอดำเนินการ" {{ 'selected' if order.order_status=='รอดำเนินการ' }}>🟡
+                                รอดำเนินการ</option>
+                            <option value="กำลังจัดส่ง" {{ 'selected' if order.order_status=='กำลังจัดส่ง' }}>🔵
+                                กำลังจัดส่ง</option>
+                            <option value="จัดส่งแล้ว" {{ 'selected' if order.order_status=='จัดส่งแล้ว' }}>🟢
+                                จัดส่งแล้ว</option>
+                            <option value="ยกเลิก" {{ 'selected' if order.order_status=='ยกเลิก' }}>🔴 ยกเลิก</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="admin-order-body">
+                    <div class="admin-order-product">
+                        <img src="{{ url_for('static', filename='images/' + order.product_image) }}"
+                            alt="{{ order.product_name }}">
+                        <div>
+                            <strong>{{ order.product_name }}</strong>
+                            <span class="admin-order-price">฿{{ '{:,.0f}'.format(order.price) }}</span>
+                        </div>
+                    </div>
+                    <div class="admin-order-details">
+                        <div class="admin-order-detail">
+                            <span class="detail-icon-small">👤</span>
+                            <span>{{ order.customer_name }}</span>
+                        </div>
+                        <div class="admin-order-detail">
+                            <span class="detail-icon-small">📞</span>
+                            <span>{{ order.customer_phone }}</span>
+                        </div>
+                        <div class="admin-order-detail">
+                            <span class="detail-icon-small">📍</span>
+                            <span>{{ order.customer_address }}</span>
+                        </div>
+                        <div class="admin-order-detail">
+                            <span class="detail-icon-small">💳</span>
+                            <span>
+                                {% if order.payment_method == 'cod' %}
+                                💵 เก็บเงินปลายทาง
+                                {% else %}
+                                📱 QR Code - {{ order.payment_status }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% if order.destination_lat and order.destination_lng %}
+                        <div class="admin-order-detail">
+                            <span class="detail-icon-small">🗺️</span>
+                            <a href="https://www.google.com/maps?q={{ order.destination_lat }},{{ order.destination_lng }}"
+                                target="_blank" class="map-link">
+                                ดูบน Google Maps →
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    function updateStatus(selectEl) {
+        const orderId = selectEl.dataset.orderId;
+        const newStatus = selectEl.value;
+
+        fetch('/api/orders/' + orderId + '/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Flash animation
+                    const card = document.getElementById('order-' + orderId);
+                    card.style.transition = 'box-shadow 0.3s ease';
+                    card.style.boxShadow = '0 0 20px rgba(45, 106, 79, 0.4)';
+                    setTimeout(() => {
+                        card.style.boxShadow = '';
+                    }, 1500);
+                }
+            })
+            .catch(err => {
+                alert('เกิดข้อผิดพลาด กรุณาลองอีกครั้ง');
+            });
+    }
+</script>
+{% endblock %}

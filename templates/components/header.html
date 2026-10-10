@@ -14,9 +14,9 @@
         <nav class="header-nav" id="headerNav">
             <a href="{{ url_for('products') }}" class="{{ 'active' if active_page == 'products' }}">สินค้า</a>
             <a href="{{ url_for('men') }}" class="{{ 'active' if active_page == 'men' }}">ผู้ชาย</a>
-            <a href="{{ url_for('women') }}" class="{{ 'active' if active_page == 'women' }}">ผู้หญิง</a>
             <a href="{{ url_for('promotions') }}" class="{{ 'active' if active_page == 'promotions' }}">โปรโมชั่น</a>
             <a href="{{ url_for('search_page') }}" class="{{ 'active' if active_page == 'search' }}">ค้นหา</a>
+            <a href="{{ url_for('admin_orders') }}" class="{{ 'active' if active_page == 'admin' }}">📋 ออเดอร์</a>
         </nav>
 
         <div class="header-actions">

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}สั่งซื้อสำเร็จ - {{ order.order_id }} - Elemental{% endblock %}
+
+{% block content %}
+<div class="page-header" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d6a4f 100%);">
+    <div class="container">
+        <h1 class="section-title center" style="color: white;">🎉 สั่งซื้อสำเร็จ!</h1>
+        <p>ขอบคุณที่อุดหนุนครับ/ค่ะ</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="success-card">
+            <div class="success-icon">✅</div>
+            <h2 class="success-title">ออเดอร์ #{{ order.order_id }}</h2>
+            <p class="success-subtitle">เราได้รับออเดอร์ของคุณแล้ว กำลังดำเนินการจัดส่ง</p>
+
+            <div class="success-details">
+                <div class="success-detail-grid">
+                    <div class="success-detail-item">
+                        <div class="detail-icon">📦</div>
+                        <div class="detail-content">
+                            <span class="detail-label">สินค้า</span>
+                            <strong>{{ order.product_name }}</strong>
+                        </div>
+                    </div>
+                    <div class="success-detail-item">
+                        <div class="detail-icon">💰</div>
+                        <div class="detail-content">
+                            <span class="detail-label">ราคา</span>
+                            <strong>฿{{ '{:,.0f}'.format(order.price) }}</strong>
+                        </div>
+                    </div>
+                    <div class="success-detail-item">
+                        <div class="detail-icon">👤</div>
+                        <div class="detail-content">
+                            <span class="detail-label">ชื่อผู้สั่ง</span>
+                            <strong>{{ order.customer_name }}</strong>
+                        </div>
+                    </div>
+                    <div class="success-detail-item">
+                        <div class="detail-icon">📞</div>
+                        <div class="detail-content">
+                            <span class="detail-label">เบอร์โทร</span>
+                            <strong>{{ order.customer_phone }}</strong>
+                        </div>
+                    </div>
+                    <div class="success-detail-item full-width">
+                        <div class="detail-icon">📍</div>
+                        <div class="detail-content">
+                            <span class="detail-label">ที่อยู่จัดส่ง</span>
+                            <strong>{{ order.customer_address }}</strong>
+                        </div>
+                    </div>
+                    <div class="success-detail-item">
+                        <div class="detail-icon">💳</div>
+                        <div class="detail-content">
+                            <span class="detail-label">ช่องทางชำระเงิน</span>
+                            <strong>
+                                {% if order.payment_method == 'cod' %}
+                                💵 เก็บเงินปลายทาง
+                                {% else %}
+                                📱 สแกน QR Code
+                                {% endif %}
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="success-detail-item">
+                        <div class="detail-icon">📋</div>
+                        <div class="detail-content">
+                            <span class="detail-label">สถานะ</span>
+                            <strong>
+                                <span class="status-badge status-pending">{{ order.order_status }}</span>
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                {% if order.destination_lat and order.destination_lng %}
+                <div class="success-map-section">
+                    <h3>📍 จุดหมายปลายทาง</h3>
+                    <div id="successMap" class="success-map"></div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="success-actions">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">🏠 กลับหน้าหลัก</a>
+                <a href="{{ url_for('products') }}" class="btn btn-secondary">🛒 ช้อปต่อ</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if order.destination_lat and order.destination_lng %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const lat = {{ order.destination_lat }
+    };
+    const lng = {{ order.destination_lng }};
+    const map = L.map('successMap').setView([lat, lng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup('📍 จุดจัดส่งสินค้า').openPopup();
+    setTimeout(function () { map.invalidateSize(); }, 300);
+});
+</script>
+{% endif %}
+{% endblock %}

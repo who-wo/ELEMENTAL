@@ -11,38 +11,122 @@
 
 <section class="section">
     <div class="container">
-        <div class="product-detail-grid" style="max-width: 900px; margin: 0 auto;">
-            <div class="product-detail-image" style="aspect-ratio: 1/1;">
-                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+        <div class="order-layout">
+            <!-- Left: Product info -->
+            <div class="order-product-summary">
+                <div class="order-product-card">
+                    <div class="order-product-image">
+                        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="order-product-info">
+                        <h2>{{ product.name }}</h2>
+                        <p class="order-product-price">
+                            {% if product.on_sale %}
+                            <span class="sale-price">฿{{ '{:,.0f}'.format(product.sale_price) }}</span>
+                            <span class="original-price">฿{{ '{:,.0f}'.format(product.price) }}</span>
+                            {% else %}
+                            <span>฿{{ '{:,.0f}'.format(product.price) }}</span>
+                            {% endif %}
+                        </p>
+                        <p class="order-product-desc">{{ product.description }}</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <h2 style="font-family: var(--font-heading); text-transform: uppercase; margin-bottom: 8px;">{{
-                    product.name }}</h2>
-                <p style="font-size: 1.3rem; font-weight: 700; margin-bottom: 24px;">
-                    {% if product.on_sale %}
-                    ฿{{ '{:,.0f}'.format(product.sale_price) }}
-                    <span
-                        style="text-decoration: line-through; color: #a0a0a0; font-weight: 400; font-size: 1rem; margin-left: 8px;">฿{{
-                        '{:,.0f}'.format(product.price) }}</span>
-                    {% else %}
-                    ฿{{ '{:,.0f}'.format(product.price) }}
-                    {% endif %}
-                </p>
 
-                <form method="POST" class="order-form" style="margin: 0; padding: 0; width: 100%;">
-                    <div class="form-group">
-                        <label>ชื่อ-นามสกุล</label>
-                        <input type="text" name="name" required placeholder="กรอกชื่อ-นามสกุล">
+            <!-- Right: Order form -->
+            <div class="order-form-section">
+                <form method="POST" class="order-form" id="orderForm">
+                    <!-- Customer Info -->
+                    <div class="order-form-block">
+                        <h3 class="order-form-block-title">
+                            <span class="order-step-number">1</span>
+                            ข้อมูลผู้สั่งซื้อ
+                        </h3>
+                        <div class="form-group">
+                            <label for="name">ชื่อ-นามสกุล</label>
+                            <input type="text" name="name" id="name" required placeholder="กรอกชื่อ-นามสกุล">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">เบอร์โทรศัพท์</label>
+                            <input type="tel" name="phone" id="phone" required placeholder="08x-xxx-xxxx">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>ที่อยู่จัดส่ง</label>
-                        <input type="text" name="address" required placeholder="กรอกที่อยู่จัดส่งสินค้า">
+
+                    <!-- Address + Map -->
+                    <div class="order-form-block">
+                        <h3 class="order-form-block-title">
+                            <span class="order-step-number">2</span>
+                            จุดหมายปลายทาง
+                        </h3>
+                        <div class="form-group">
+                            <label for="address">ที่อยู่จัดส่ง</label>
+                            <textarea name="address" id="address" required
+                                placeholder="กรอกที่อยู่จัดส่งสินค้า เช่น บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด"
+                                rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>📍 ปักหมุดจุดหมายปลายทาง <small>(คลิกบนแผนที่เพื่อเลือกตำแหน่ง)</small></label>
+                            <div class="map-container" id="mapContainer">
+                                <div id="map" class="map-box"></div>
+                                <div class="map-coords" id="mapCoords">
+                                    <span>📍 ยังไม่ได้เลือกตำแหน่ง</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="lat" id="lat">
+                            <input type="hidden" name="lng" id="lng">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>เบอร์โทรศัพท์</label>
-                        <input type="text" name="phone" required placeholder="กรอกเบอร์โทรศัพท์">
+
+                    <!-- Payment Method -->
+                    <div class="order-form-block">
+                        <h3 class="order-form-block-title">
+                            <span class="order-step-number">3</span>
+                            วิธีชำระเงิน
+                        </h3>
+                        <div class="payment-options">
+                            <label class="payment-option active" id="paymentCOD">
+                                <input type="radio" name="payment_method" value="cod" checked>
+                                <div class="payment-option-content">
+                                    <div class="payment-option-icon">💵</div>
+                                    <div class="payment-option-details">
+                                        <strong>เก็บเงินปลายทาง (COD)</strong>
+                                        <p>ชำระเงินสดเมื่อได้รับสินค้า</p>
+                                    </div>
+                                    <div class="payment-check">✓</div>
+                                </div>
+                            </label>
+                            <label class="payment-option" id="paymentQR">
+                                <input type="radio" name="payment_method" value="qr">
+                                <div class="payment-option-content">
+                                    <div class="payment-option-icon">📱</div>
+                                    <div class="payment-option-details">
+                                        <strong>สแกน QR Code</strong>
+                                        <p>โอนผ่าน Mobile Banking / PromptPay</p>
+                                    </div>
+                                    <div class="payment-check">✓</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- QR Code Display -->
+                        <div class="qr-section" id="qrSection" style="display: none;">
+                            <div class="qr-card">
+                                <h4>สแกนเพื่อชำระเงิน</h4>
+                                <div class="qr-code-box" id="qrCodeBox">
+                                    <!-- QR will be generated here -->
+                                </div>
+                                <div class="qr-info">
+                                    <p class="qr-amount">จำนวนเงิน: <strong>฿{{ '{:,.0f}'.format(product.sale_price if
+                                            product.on_sale else product.price) }}</strong></p>
+                                    <p class="qr-name">ชื่อบัญชี: <strong>Elemental Adventure Co.</strong></p>
+                                    <p class="qr-promptpay">PromptPay: <strong>098-765-4321</strong></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-primary order-submit-btn" id="submitBtn">
                         ✅ ยืนยันการสั่งซื้อ
                     </button>
                 </form>
@@ -50,4 +134,118 @@
         </div>
     </div>
 </section>
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- QR Code Generator -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // === MAP ===
+        const map = L.map('map').setView([13.7563, 100.5018], 13); // Default: Bangkok
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 19
+        }).addTo(map);
+
+        let marker = null;
+
+        // Try to get user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (pos) {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                map.setView([lat, lng], 15);
+            });
+        }
+
+        map.on('click', function (e) {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+
+            document.getElementById('lat').value = lat;
+            document.getElementById('lng').value = lng;
+            document.getElementById('mapCoords').innerHTML =
+                '<span class="coords-active">📍 ตำแหน่ง: ' + lat + ', ' + lng + '</span>';
+
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng, {
+                    draggable: true
+                }).addTo(map);
+
+                marker.on('dragend', function (ev) {
+                    const pos = ev.target.getLatLng();
+                    document.getElementById('lat').value = pos.lat.toFixed(6);
+                    document.getElementById('lng').value = pos.lng.toFixed(6);
+                    document.getElementById('mapCoords').innerHTML =
+                        '<span class="coords-active">📍 ตำแหน่ง: ' + pos.lat.toFixed(6) + ', ' + pos.lng.toFixed(6) + '</span>';
+                });
+            }
+
+            marker.bindPopup('📍 จุดจัดส่งสินค้า').openPopup();
+        });
+
+        // Invalidate map size after render
+        setTimeout(function () { map.invalidateSize(); }, 300);
+
+        // === PAYMENT METHOD ===
+        const paymentOptions = document.querySelectorAll('.payment-option');
+        const qrSection = document.getElementById('qrSection');
+
+        paymentOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                paymentOptions.forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+
+                if (radio.value === 'qr') {
+                    qrSection.style.display = 'block';
+                    generateQRCode();
+                } else {
+                    qrSection.style.display = 'none';
+                }
+            });
+        });
+
+        // === QR CODE GENERATION ===
+        function generateQRCode() {
+            const qrBox = document.getElementById('qrCodeBox');
+            qrBox.innerHTML = '';
+
+            const amount = '{{ product.sale_price if product.on_sale else product.price }}';
+            const qrData = 'promptpay://0987654321?amount=' + amount;
+
+            const qr = qrcode(0, 'M');
+            qr.addData(qrData);
+            qr.make();
+
+            const img = document.createElement('div');
+            img.innerHTML = qr.createSvgTag(5, 0);
+            img.querySelector('svg').style.display = 'block';
+            img.querySelector('svg').style.margin = '0 auto';
+            qrBox.appendChild(img);
+        }
+
+        // === FORM VALIDATION ===
+        document.getElementById('orderForm').addEventListener('submit', function (e) {
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+
+            if (!name || !phone || !address) {
+                e.preventDefault();
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+        });
+    });
+</script>
 {% endblock %}
